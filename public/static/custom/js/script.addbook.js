@@ -113,6 +113,99 @@ $(document).on("click","#addbooks",function(){
         }
 }); // add books to database
 
+$(document).on("click","#editbook",function(){
+
+    var form = $(this).parents('form'),
+        module_body = $(this).parents('.module-body'),
+        sendJSON ={},
+        send_flag = true,
+        f$ = function(selector) {
+            return form.find(selector);
+        };
+
+        book_id = $('input[data-form-field~=book_id]').val();
+        title = $('input[data-form-field~=title]').val();
+        author = $('input[data-form-field~=author]').val();
+    description = $('textarea[data-form-field~=description]').val();
+    category_id = $('select[data-form-field~=category]').val();
+    number = parseInt($('input[data-form-field~=number]').val());
+    auth_user = $('input[data-form-field~=auth_user]').val();
+    _token = $('input[data-form-field~=token]').val();
+
+    if(title == "" || author == "" || description == "" || number == null){
+        module_body.prepend(templates.alert_box( {type: 'danger', message: 'Book Details Not Complete'} ));
+        send_flag = false;
+    }
+    
+    if(send_flag == true){
+
+        $.ajax({
+            type : 'PUT',
+            data : {
+               book_id:book_id,title:title, author:author, description:description,
+                number:number, category_id : category_id, _token:_token,
+                auth_user:auth_user
+            },
+            url : '/books/' + book_id,
+            success: function(data) {                    
+                module_body.prepend(templates.alert_box( {type: 'success', message: data} ));
+                //clearform();
+            },
+            error: function(xhr,status,error){
+                var err = eval("(" + xhr.responseText + ")");
+                module_body.prepend(templates.alert_box( {type: 'danger', message: err.error.message} ));
+            },
+            beforeSend: function() {
+                form.css({'opacity' : '0.4'});
+            },
+            complete: function() {
+                form.css({'opacity' : '1.0'});
+            }
+        });
+    }
+}); // edit books to database
+
+
+$(document).on("click","#deletebook",function(){
+
+    var form = $(this).parents('form'),
+        module_body = $(this).parents('.module-body'),
+        sendJSON ={},
+        send_flag = true,
+        f$ = function(selector) {
+            return form.find(selector);
+        };
+
+        book_id = $('input[data-form-field~=book_id]').val();
+     
+    if(send_flag == true){
+
+        $.ajax({
+            type : 'DELETE',
+            data : {
+               book_id:book_id,
+               _token:$('input[data-form-field~=token]').val()
+            },
+            url : '/books/' + book_id,
+            success: function(data) {                    
+                module_body.prepend(templates.alert_box( {type: 'success', message: data} ));
+                clearform();
+            },
+            error: function(xhr,status,error){
+                var err = eval("(" + xhr.responseText + ")");
+                module_body.prepend(templates.alert_box( {type: 'danger', message: err.error.message} ));
+            },
+            beforeSend: function() {
+                form.css({'opacity' : '0.4'});
+            },
+            complete: function() {
+                form.css({'opacity' : '1.0'});
+                window.location = "/all-books";
+            }
+        });
+    }
+}); // delete books to database
+
 
     loadResults();
 

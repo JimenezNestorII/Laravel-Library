@@ -240,7 +240,13 @@ class BooksController extends Controller
 	 */
 	public function update($id)
 	{
-		//
+		$book = Books::find($id);
+		$book->title = $book->title;
+		$book->author = $book->author;
+		$book->category_id = $book->category_id;
+		$book->description = $book->description;
+		$book->save();
+		return "Update successfull";
 	}
 
 
@@ -252,6 +258,10 @@ class BooksController extends Controller
 	 */
 	public function destroy($id)
 	{
+
+		Books::destroy($id);
+		return "OK";
+
 		//
 	}
 
@@ -270,9 +280,9 @@ class BooksController extends Controller
 
 	public function renderEditBooks($book_id) {
         $db_control = new HomeController();
-
-        return view('panel.editbook')
-            ->with('categories_list', $db_control->categories_list);
+		$book = Books::find($book_id);
+        return view('panel.editbook',['categories_list' => $db_control->categories_list, 'book' => $book]);
+            //->with('categories_list', $db_control->categories_list);
     }
 
     public function renderAllBooks() {

@@ -24,7 +24,7 @@ class LogController extends Controller
 			// dd($logs);
 		
 		$logs = $logs->get();
-
+//return $logs;
 		for($i=0; $i<count($logs); $i++){
 	        
 	        $issue_id = $logs[$i]['book_issue_id'];
@@ -102,9 +102,11 @@ class LogController extends Controller
 
 							// book is to be issued
 							DB::transaction( function() use($bookID, $studentID) {
+								$book = Issue::where('book_id', $bookID)->where('available_status', '!=', 0)->first();
+	
 								$log = new Logs;
 
-								$log->book_issue_id = $bookID;
+								$log->book_issue_id = $book->issue_id;
 								$log->student_id	= $studentID;
 								$log->issue_by		= Auth::id();
 								$log->issued_at		= date('Y-m-d H:i');
@@ -112,7 +114,6 @@ class LogController extends Controller
 
 								$log->save();
 
-								$book = Issue::where('book_id', $bookID)->where('available_status', '!=', 0)->first();
 								// changing the availability status
 								$book_issue_update = Issue::where('book_id', $bookID)->where('issue_id', $book->issue_id)->first();
 								$book_issue_update->available_status = 0;
